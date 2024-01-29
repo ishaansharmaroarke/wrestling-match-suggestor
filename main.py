@@ -23,9 +23,16 @@ async def on_message(message):
 
 
 @tree.command(
-    name="suggestmatch", description="Suggest a match involving one or more wrestlers! (Upto 4 only)"
+    name="suggestmatch",
+    description="Suggest a match involving one or more wrestlers! (Upto 4 only)",
 )
-async def suggest_match(ctx, wrestlers: str, after_year: int, before_year: int, show_result: bool = False):
+async def suggest_match(
+    ctx,
+    wrestlers: str,
+    after_year: int,
+    before_year: int = 2024,
+    show_result: bool = False,
+):
     try:
         print(show_result)
         await ctx.response.defer()
@@ -41,7 +48,7 @@ async def suggest_match(ctx, wrestlers: str, after_year: int, before_year: int, 
         await ctx.followup.send(embed=match_embed(ctx, match_info))
     except Exception:
         await ctx.followup.send(
-            embed=match_not_found_embed(ctx, wrestlers, after_year, before_year)
+            embed=match_not_found_embed(ctx, wrestlers, after_year, before_year=2024)
         )
 
 
@@ -49,7 +56,7 @@ def match_not_found_embed(ctx, wrestlers, after_year, before_year):
     wrestlers = ", ".join(wrestlers)
     embed = discord.Embed(
         title="Match Not Found",
-        description=f"No match found that includes {wrestlers} between {before_year}-{after_year}. Make sure there are no typing errors or try broadening your search!",
+        description=f"No match found that includes {wrestlers} between {after_year}-{before_year}. Make sure there are no typing errors or try broadening your search!",
         color=0xFF0000,
     )
     return embed
@@ -57,11 +64,18 @@ def match_not_found_embed(ctx, wrestlers, after_year, before_year):
 
 def match_embed(ctx, match):
     embed = discord.Embed(
-        title=f"Match Suggestion for {ctx.user.display_name} ", description=match["match_details"], color=0xFFFF00
+        title=f"Match Suggestion for {ctx.user.display_name} ",
+        description=match["match_details"],
+        color=0xFFFF00,
     )
     embed.add_field(name="Date", value=match["date"], inline=True)
     embed.add_field(name="Event", value=match["event"], inline=True)
     embed.add_field(name="Promotion", value=match["promotion"], inline=True)
+    embed.add_field(name="Winner", value=f"||{match['result']}||", inline=True)
+    embed.set_footer(
+        text="Powered by CageMatch.net",
+        icon_url="https://cdn.discordapp.com/attachments/1201470152739389452/1201558708640030862/cagematch.jpg",
+    )
     embed.set_thumbnail(url=match["image_link"])
     return embed
 
