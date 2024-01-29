@@ -36,3 +36,47 @@ def pick_random_match(matches):
         return None
 
 
+def extract_match_info(match, showResult=False):
+    print(match)
+    match_info = {}
+    if showResult:
+        showResult = 1
+    # date
+    date = match.find("td", class_="TCol TColSeparator").text.strip()
+    match_info["date"] = date
+
+    # promotion
+    promotion = match.find("img", class_="ImagePromotionLogoMini")["title"]
+    match_info["promotion"] = promotion
+
+    # image link
+    image_link = match.find("img", class_="ImagePromotionLogoMini")["src"]
+    match_info["image_link"] = "https://www.cagematch.net" + image_link.replace(
+        "mini", "normal"
+    )
+    match_info["image_link"] = quote(match_info["image_link"], safe="/:")
+
+    # match details
+    match_details = match.find("span", class_="MatchCard").text.strip()
+    match_details_copy = match_details  # Create a copy of the original match_details
+    print(match_details_copy)
+
+    if not showResult:
+        match_details_copy = (
+            match_details_copy.replace("defeats", "vs")
+            .replace("defeat", "vs")
+            .replace("and", "vs")
+            .split("(")[0]
+            .strip()
+            .split("by ")[0]
+            .strip()
+        )
+        match_info["match_details"] = match_details_copy
+    else:
+        duration = re.search(r"\((.*?)\)", match_details).group(1)
+        match_info["duration"] = duration
+    # event
+    event = match.find("div", class_="MatchEventLine").text.strip()
+    match_info["event"] = event
+
+    return match_info
