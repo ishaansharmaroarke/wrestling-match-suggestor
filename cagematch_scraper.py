@@ -65,11 +65,10 @@ def extract_match_info(match, showResult=False):
             match_details_copy.replace("defeats", "vs")
             .replace("defeat", "vs")
             .replace("and", "vs")
-            .split("(")[0]
-            .strip()
-            .split("by ")[0]
+            .split(" by ")[0]
             .strip()
         )
+        match_details_copy = re.sub(r'\(\d.*', '', match_details_copy).strip()
         match_info["match_details"] = match_details_copy
     else:
         duration = re.search(r"\((.*?)\)", match_details).group(1)
