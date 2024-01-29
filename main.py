@@ -6,6 +6,7 @@ import cagematch_scraper
 import os
 from dotenv import load_dotenv
 import datetime
+import traceback
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -30,13 +31,13 @@ async def on_message(message):
 
 @tree.command(
     name="suggestmatch",
-    description="Suggest a match involving one or more wrestlers! (Upto 4 only)",
+    description="Suggest a match involving one or more wrestlers! (Use full-names and commas to upto 4 wrestlers)",
 )
 async def suggest_match(
     ctx,
     wrestlers: str,
     after_year: int,
-    before_year: int = datetime.datetime.now().year,
+    before_year: int = 2100,
 ):
     try:
         await ctx.response.defer()
@@ -47,7 +48,11 @@ async def suggest_match(
         random_match = cagematch_scraper.pick_random_match(wrestling_matches)
         match_info = cagematch_scraper.extract_match_info(random_match)
         await ctx.followup.send(embed=match_embed(ctx, match_info))
-    except Exception:
+    except Exception as e:
+        error_message = f"An error occurred: {str(e)}\n\n{traceback.format_exc()}"
+        with open("error.log", "a") as file:
+            file.write(error_message)
+            
         await ctx.followup.send(
             embed=match_not_found_embed(ctx, wrestlers, after_year, before_year)
         )
