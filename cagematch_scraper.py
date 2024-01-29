@@ -19,7 +19,7 @@ def get_wrestling_matches(wrestlers, after_year, before_year):
     contains_wrestlers = create_wrestlers_query(wrestlers)
 
     URL = f"https://www.cagematch.net/?id=112&view=search&{contains_wrestlers}&sEventName=&sEventType=TV-Show%7CPay+Per+View%7CPremium+Live+Event%7COnline+Stream&sDateFromDay=01&sDateFromMonth=01&sDateFromYear={after_year}&sDateTillDay=31&sDateTillMonth=12&sDateTillYear={before_year}&sPromotion=&sLocation=&sArena=&sRegion=&sMatchType=&sConstellation=&sWorkerRelationship=Any&sFulltextSearch="
-
+    print(URL)
     cagematch_results = session.get(URL)
     return cagematch_results
 
@@ -58,7 +58,9 @@ def extract_match_info(match, showResult=False):
 
     match_type = match.find("span", class_="MatchType")
     if match_type:
-        match_info["match_type"] = match_type.text.strip() 
+        match_info["match_type"] = match_type.text
+    else:
+        match_info["match_type"] = ""
     
     match_details = match.find("span", class_="MatchCard").text.strip()
     match_info["match_details"] = match_details
@@ -84,3 +86,5 @@ def extract_match_info(match, showResult=False):
     # winner
     match_info["result"] = match_details.split('defeat')[0].strip()
     return match_info
+
+# matches = get_wrestling_matches(["Bret Hart", "Shawn Michaels"], 1990, 2000)

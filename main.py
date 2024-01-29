@@ -37,7 +37,7 @@ async def suggest_match(
     ctx,
     wrestlers: str,
     after_year: int,
-    before_year: int = 2100,
+    before_year: int = datetime.datetime.now().year,
 ):
     try:
         await ctx.response.defer()
@@ -52,7 +52,7 @@ async def suggest_match(
         error_message = f"An error occurred: {str(e)}\n\n{traceback.format_exc()}"
         with open("error.log", "a") as file:
             file.write(error_message)
-            
+
         await ctx.followup.send(
             embed=match_not_found_embed(ctx, wrestlers, after_year, before_year)
         )
@@ -69,7 +69,7 @@ def match_not_found_embed(ctx, wrestlers, after_year, before_year):
 
 
 def match_embed(ctx, match):
-    description = f"{match['match_type']}  {match['match_details']}" if match['match_type'] else match['match_details']
+    description = f"{match['match_type']} {match['match_details']}" 
     embed = discord.Embed(
         title=f"Match Suggestion for {ctx.user.display_name}",
         description=description,
