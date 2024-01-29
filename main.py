@@ -23,7 +23,7 @@ async def on_message(message):
 
 
 @tree.command(
-    name="suggestmatch", description="Suggest a match between two or more wrestlers!"
+    name="suggestmatch", description="Suggest a match involving one or more wrestlers! (Upto 4 only)"
 )
 async def suggest_match(ctx, wrestlers: str, after_year: int, before_year: int, show_result: bool = False):
     try:
