@@ -3,11 +3,16 @@
 import discord
 from discord import app_commands
 import cagematch_scraper
+import os
+from dotenv import load_dotenv
 
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
+
+load_dotenv()
+token = os.getenv("BOT_TOKEN")
 
 
 @client.event
@@ -80,4 +85,4 @@ def match_embed(ctx, match):
     return embed
 
 
-client.run("MTIwMTQ3MjA1NTA4Njk0MDI0MA.G0okY4.5bAHyA-g8vquiIxQw8sPOHoKewZhPk9pkigqUY")
+client.run(token)
