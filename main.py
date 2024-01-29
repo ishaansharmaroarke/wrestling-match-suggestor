@@ -28,8 +28,9 @@ async def on_message(message):
 @tree.command(
     name="suggestmatch", description="Suggest a match between two or more wrestlers!"
 )
-async def suggest_match(ctx, wrestlers: str, after_year: int, before_year: int):
+async def suggest_match(ctx, wrestlers: str, after_year: int, before_year: int, show_result: bool = False):
     try:
+        print(show_result)
         await ctx.response.defer()
         wrestlers = wrestlers.split(",")
         print(wrestlers)
@@ -39,7 +40,7 @@ async def suggest_match(ctx, wrestlers: str, after_year: int, before_year: int):
             wrestlers, after_year, before_year
         )
         random_match = cagematch_scraper.pick_random_match(wrestling_matches)
-        match_info = cagematch_scraper.extract_match_info(random_match)
+        match_info = cagematch_scraper.extract_match_info(random_match, show_result)
         # print(r)
         await ctx.followup.send(embed=match_embed(ctx, match_info))
     except Exception:
