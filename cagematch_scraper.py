@@ -24,3 +24,15 @@ def get_wrestling_matches(wrestlers, after_year, before_year):
     return cagematch_results
 
 
+def pick_random_match(matches):
+    try:
+        soup = BeautifulSoup(matches.content, "html.parser")
+        matches_table = soup.find("div", class_="TableContents")
+        random_match = random.choice(
+            matches_table.find_all("tr", class_=lambda c: c.startswith("TRow"))
+        )
+        return random_match
+    except:
+        return None
+
+
