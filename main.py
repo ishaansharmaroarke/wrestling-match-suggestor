@@ -5,6 +5,7 @@ from discord import app_commands
 import cagematch_scraper
 import os
 from dotenv import load_dotenv
+import datetime
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -35,25 +36,20 @@ async def suggest_match(
     ctx,
     wrestlers: str,
     after_year: int,
-    before_year: int = 2024,
-    show_result: bool = False,
+    before_year: int = datetime.datetime.now().year,
 ):
     try:
-        print(show_result)
         await ctx.response.defer()
         wrestlers = wrestlers.split(",")
-        print(wrestlers)
-        print(after_year)
-        print(before_year)
         wrestling_matches = cagematch_scraper.get_wrestling_matches(
             wrestlers, after_year, before_year
         )
         random_match = cagematch_scraper.pick_random_match(wrestling_matches)
-        match_info = cagematch_scraper.extract_match_info(random_match, show_result)
+        match_info = cagematch_scraper.extract_match_info(random_match)
         await ctx.followup.send(embed=match_embed(ctx, match_info))
     except Exception:
         await ctx.followup.send(
-            embed=match_not_found_embed(ctx, wrestlers, after_year, before_year=2024)
+            embed=match_not_found_embed(ctx, wrestlers, after_year, before_year)
         )
 
 
@@ -68,9 +64,10 @@ def match_not_found_embed(ctx, wrestlers, after_year, before_year):
 
 
 def match_embed(ctx, match):
+    description = f"{match['match_type']}  {match['match_details']}" if match['match_type'] else match['match_details']
     embed = discord.Embed(
-        title=f"Match Suggestion for {ctx.user.display_name} ",
-        description=match["match_details"],
+        title=f"Match Suggestion for {ctx.user.display_name}",
+        description=description,
         color=0xFFFF00,
     )
     embed.add_field(name="Date", value=match["date"], inline=True)
