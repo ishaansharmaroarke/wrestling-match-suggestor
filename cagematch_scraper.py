@@ -55,6 +55,11 @@ def extract_match_info(match, showResult=False):
     match_info["image_link"] = quote(match_info["image_link"], safe="/:")
 
     # match details
+
+    match_type = match.find("span", class_="MatchType")
+    if match_type:
+        match_info["match_type"] = match_type.text.strip() 
+    
     match_details = match.find("span", class_="MatchCard").text.strip()
     match_info["match_details"] = match_details
     match_details_copy = match_details  # Create a copy of the original match_details
@@ -64,7 +69,7 @@ def extract_match_info(match, showResult=False):
         match_details_copy = (
             match_details_copy.replace("defeats", "vs")
             .replace("defeat", "vs")
-            .replace("and", "vs")
+            .replace(" and ", " vs ")
             .split(" by ")[0]
             .strip()
         )
