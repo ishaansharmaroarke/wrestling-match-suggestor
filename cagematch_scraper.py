@@ -76,5 +76,6 @@ def extract_match_info(match, showResult=False):
     # event
     event = match.find("div", class_="MatchEventLine").text.strip()
     match_info["event"] = event
-
+    # winner
+    match_info["result"] = match_details.split('defeat')[0].strip()
     return match_info
