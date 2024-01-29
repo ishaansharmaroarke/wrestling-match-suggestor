@@ -21,9 +21,6 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith("$hello"):
-        await message.channel.send("Hello!")
-
 
 @tree.command(
     name="suggestmatch", description="Suggest a match between two or more wrestlers!"
@@ -41,7 +38,6 @@ async def suggest_match(ctx, wrestlers: str, after_year: int, before_year: int, 
         )
         random_match = cagematch_scraper.pick_random_match(wrestling_matches)
         match_info = cagematch_scraper.extract_match_info(random_match, show_result)
-        # print(r)
         await ctx.followup.send(embed=match_embed(ctx, match_info))
     except Exception:
         await ctx.followup.send(
@@ -61,13 +57,12 @@ def match_not_found_embed(ctx, wrestlers, after_year, before_year):
 
 def match_embed(ctx, match):
     embed = discord.Embed(
-        title="Match Suggestion", description=match["match_details"], color=0x00FF00
+        title=f"Match Suggestion for {ctx.user.display_name} ", description=match["match_details"], color=0xFFFF00
     )
     embed.add_field(name="Date", value=match["date"], inline=True)
     embed.add_field(name="Event", value=match["event"], inline=True)
     embed.add_field(name="Promotion", value=match["promotion"], inline=True)
     embed.set_thumbnail(url=match["image_link"])
-    print(match["image_link"])
     return embed
 
 
