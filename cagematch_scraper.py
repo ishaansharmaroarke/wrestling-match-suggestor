@@ -39,8 +39,6 @@ def pick_random_match(matches):
 def extract_match_info(match, showResult=False):
     print(match)
     match_info = {}
-    if showResult:
-        showResult = 1
     # date
     date = match.find("td", class_="TCol TColSeparator").text.strip()
     match_info["date"] = date
@@ -58,6 +56,7 @@ def extract_match_info(match, showResult=False):
 
     # match details
     match_details = match.find("span", class_="MatchCard").text.strip()
+    match_info["match_details"] = match_details
     match_details_copy = match_details  # Create a copy of the original match_details
     print(match_details_copy)
 
