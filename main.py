@@ -62,7 +62,7 @@ def match_not_found_embed(ctx, wrestlers, after_year, before_year):
     wrestlers = ", ".join(wrestlers)
     embed = discord.Embed(
         title="Match Not Found",
-        description=f"No match found that includes {wrestlers} between {after_year}-{before_year}. Make sure there are no typing errors or try broadening your search!",
+        description=f"No match found that includes {wrestlers} between {after_year}-{before_year}. Make sure there are no typing errors or try broadening your search! (if you're trying to search for more than one wrestler, make sure you use only commas to separate them)",
         color=0xFF0000,
     )
     return embed
