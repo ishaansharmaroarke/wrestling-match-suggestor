@@ -13,17 +13,27 @@ def create_wrestlers_query(wrestlers):
     return query
 
 
-def get_wrestling_matches(wrestlers, after_year, before_year):
+def get_wrestling_matches(wrestlers, after_year, before_year, page=0):
     session = requests.Session()
     session.headers.update({"Accept-Encoding": "identity"})
     contains_wrestlers = create_wrestlers_query(wrestlers)
-
-    URL = f"https://www.cagematch.net/?id=112&view=search&{contains_wrestlers}&sEventName=&sEventType=TV-Show%7CPay+Per+View%7CPremium+Live+Event%7COnline+Stream&sDateFromDay=01&sDateFromMonth=01&sDateFromYear={after_year}&sDateTillDay=31&sDateTillMonth=12&sDateTillYear={before_year}&sPromotion=&sLocation=&sArena=&sRegion=&sMatchType=&sConstellation=&sWorkerRelationship=Any&sFulltextSearch="
+    URL = f"https://www.cagematch.net/?id=112&view=search&{contains_wrestlers}&sEventName=&sEventType=TV-Show%7CPay+Per+View%7CPremium+Live+Event%7COnline+Stream&sDateFromDay=01&sDateFromMonth=01&sDateFromYear={after_year}&sDateTillDay=31&sDateTillMonth=12&sDateTillYear={before_year}&sPromotion=&sLocation=&sArena=&sRegion=&sMatchType=&sConstellation=&sWorkerRelationship=Any&s={page}"
     print(URL)
     cagematch_results = session.get(URL)
     return cagematch_results
 
-
+def pick_random_page(page):
+    try:
+        soup = BeautifulSoup(page.content, "html.parser")
+        navigation_pages = soup.findAll("div", class_="NavigationPart")[-1]
+        last_page_link = navigation_pages.findAll("a")[-1]['href']
+        page_last_num = re.search(r'&s=(\d+)', last_page_link)
+        page_last_num = int(page_last_num.group(1))
+        random_page = random.choice(range(0, page_last_num + 1, 100))
+        return random_page
+    except:
+        return None
+    
 def pick_random_match(matches):
     try:
         soup = BeautifulSoup(matches.content, "html.parser")
@@ -32,7 +42,8 @@ def pick_random_match(matches):
             matches_table.find_all("tr", class_=lambda c: c.startswith("TRow"))
         )
         return random_match
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 
@@ -87,4 +98,10 @@ def extract_match_info(match, showResult=False):
     match_info["result"] = match_details.split('defeat')[0].strip()
     return match_info
 
-# matches = get_wrestling_matches(["Bret Hart", "Shawn Michaels"], 1990, 2000)
+matches = get_wrestling_matches(["Bret Hart"], 1990, 2000)
+random_page = pick_random_page(matches)
+get_matches_list = get_wrestling_matches(["Bret Hart"], 1990, 2000, random_page)
+random_match = pick_random_match(get_matches_list)
+print(random_match)
+# random_page = pick_random_page(matches)
+# print(random_page)
