@@ -42,8 +42,12 @@ async def suggest_match(
     try:
         await ctx.response.defer()
         wrestlers = wrestlers.split(",")
-        wrestling_matches = cagematch_scraper.get_wrestling_matches(
+        initial_matches_list = cagematch_scraper.get_wrestling_matches(
             wrestlers, after_year, before_year
+        )
+        random_match_page_list = cagematch_scraper.pick_random_page(initial_matches_list)
+        wrestling_matches = cagematch_scraper.get_wrestling_matches(
+            wrestlers, after_year, before_year, random_match_page_list
         )
         random_match = cagematch_scraper.pick_random_match(wrestling_matches)
         match_info = cagematch_scraper.extract_match_info(random_match)
@@ -69,7 +73,18 @@ def match_not_found_embed(ctx, wrestlers, after_year, before_year):
 
 
 def match_embed(ctx, match):
-    description = f"{match['match_type']} {match['match_details']}" 
+    video_query = (
+        match["match_type"]
+        + " "
+        + match["match_details"]
+        + " "
+        + match["promotion"]
+        + " "
+        + match["event"]
+        + " "
+        + match["date"]
+    )
+    description = f"{match['match_type']} {match['match_details']}"
     embed = discord.Embed(
         title=f"Match Suggestion for {ctx.user.display_name}",
         description=description,
